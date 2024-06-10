@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Unit\Services\UserService;
+namespace Tests\Unit\Services\AuthService;
 
-class RegisterUserTest extends UserServiceTest
+class RegisterUserTest extends AuthServiceTest
 {
 
     public function test_registerUser_calls_createUser_on_repository_with_correct_parameters_and_returns_user()

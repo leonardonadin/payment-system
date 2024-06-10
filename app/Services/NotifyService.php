@@ -6,6 +6,12 @@ use App\Contracts\Services\NotifyServiceContract;
 
 class NotifyService implements NotifyServiceContract
 {
+    /**
+     * Send a notification
+     *
+     * @param array $notification ['title', 'message', 'type', 'user']
+     * @return bool
+     */
     public function sendNotification($notification)
     {
         $http = new \GuzzleHttp\Client;

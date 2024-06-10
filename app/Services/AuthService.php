@@ -17,6 +17,12 @@ class AuthService implements AuthServiceContract
     {
     }
 
+    /**
+     * Register a new user
+     *
+     * @param array $data
+     * @return object
+     */
     public function registerUser($data)
     {
         return $this->persistOnSuccess(function () use ($data) {
@@ -30,6 +36,12 @@ class AuthService implements AuthServiceContract
         });
     }
 
+    /**
+     * Login a user
+     *
+     * @param array $data
+     * @return array|bool Token with user data or false
+     */
     public function loginUser($data)
     {
         if ($this->authRepository->attemptLogin($data)) {
@@ -43,11 +55,21 @@ class AuthService implements AuthServiceContract
         return false;
     }
 
+    /**
+     * Logout a user
+     *
+     * @return bool
+     */
     public function logoutUser()
     {
         return $this->authRepository->logout();
     }
 
+    /**
+     * Get the authenticated user
+     *
+     * @return object
+     */
     public function getAuthUser()
     {
         return $this->authRepository->getAuthUser();

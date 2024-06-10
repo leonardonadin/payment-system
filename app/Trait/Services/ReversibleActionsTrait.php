@@ -8,35 +8,35 @@ trait ReversibleActionsTrait
 {
     public function persistOnSuccess($script)
     {
-        $this->startTransaction();
+        $this->startActions();
 
         try {
             $result = $script();
         } catch (\Exception $e) {
-            $this->rollbackTransaction();
+            $this->rollbackActions();
             throw $e;
         }
 
         if ($result) {
-            $this->commitTransaction();
+            $this->commitActions();
         } else {
-            $this->rollbackTransaction();
+            $this->rollbackActions();
         }
 
         return $result;
     }
 
-    protected function startTransaction()
+    protected function startActions()
     {
         DB::beginTransaction();
     }
 
-    protected function commitTransaction()
+    protected function commitActions()
     {
         DB::commit();
     }
 
-    protected function rollbackTransaction()
+    protected function rollbackActions()
     {
         DB::rollBack();
     }

@@ -64,7 +64,7 @@ class TransactionService implements TransactionServiceContract
             return ['error' => 'Transaction could not be created'];
         }
 
-        $this->startTransaction();
+        $this->startActions();
 
         try {
             $this->walletService->updateWalletBalance($payer_wallet->id, $payer_wallet->balance - $data['amount']);
@@ -84,11 +84,11 @@ class TransactionService implements TransactionServiceContract
 
             $this->sendNotifications($transaction);
 
-            $this->commitTransaction();
+            $this->commitActions();
 
             return $transaction;
         } catch (\Exception $e) {
-            $this->rollbackTransaction();
+            $this->rollbackActions();
 
             if (isset($transaction)) {
                 $transaction = $this->updateTransactionStatus($transaction->id, 'failed');
@@ -102,16 +102,35 @@ class TransactionService implements TransactionServiceContract
         return ['error' => 'Transaction could not be completed'];
     }
 
+    /**
+     * Get all transactions for a user.
+     *
+     * @param int $user_id
+     * @return array
+     */
     public function getTransactions($user_id)
     {
         return $this->transactionRepository->getTransactions($user_id);
     }
 
+    /**
+     * Get a transaction by id.
+     *
+     * @param int $transaction_id
+     * @return Transaction
+     */
     public function getTransaction($transaction_id)
     {
         return $this->transactionRepository->getTransaction($transaction_id);
     }
 
+    /**
+     * Update the status of a transaction.
+     *
+     * @param int $transaction_id
+     * @param string $status
+     * @return Transaction
+     */
     public function updateTransactionStatus($transaction_id, $status)
     {
         return $this->transactionRepository->updateTransaction($transaction_id, [
@@ -119,12 +138,24 @@ class TransactionService implements TransactionServiceContract
         ]);
     }
 
+    /**
+     * Authorize a transaction.
+     *
+     * @param Transaction $transaction
+     * @param array $data
+     * @return bool
+     */
     private function authorizeTransaction($transaction, $data)
     {
         $authorizationService = app()->makeWith(AuthorizationServiceContract::class);
         return $authorizationService->authorizeTransaction($transaction, $data);
     }
 
+    /**
+     * Send notifications for a transaction.
+     *
+     * @param Transaction $transaction
+     */
     private function sendNotifications($transaction)
     {
         SendSuccessNotificationJob::dispatch($transaction);
