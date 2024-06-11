@@ -39,12 +39,12 @@ return [
 
     'authorization' => [
         'token' => env('AUTHORIZATION_TOKEN'),
-        'url' => env('AUTHORIZATION_URL', 'https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc'),
+        'url' => env('AUTHORIZATION_URL', 'https://run.mocky.io/v3/ac35c88f-f627-42c5-9105-6e83a943a8df'),
     ],
 
     'notification' => [
         'token' => env('AUTHORIZATION_TOKEN'),
-        'url' => env('AUTHORIZATION_URL', 'https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6'),
+        'url' => env('AUTHORIZATION_URL', 'https://run.mocky.io/v3/6d58afc4-07f7-4f9c-a378-a2b6f6faa0c4'),
     ],
 
 ];
