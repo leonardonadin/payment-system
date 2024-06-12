@@ -15,6 +15,12 @@ class NotificationService implements TransactionNotificationServiceContract
     {
     }
 
+    /**
+     * Notify the payee about the transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
     public function notifyPayee($transaction)
     {
         $payee_wallet = $this->walletService->getWallet($transaction->payee_wallet_id);
@@ -31,6 +37,12 @@ class NotificationService implements TransactionNotificationServiceContract
         return $this->sendNotification($notification);
     }
 
+    /**
+     * Notify the payer about the transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
     public function notifyPayer($transaction)
     {
         $payer_wallet = $this->walletService->getWallet($transaction->payer_wallet_id);
@@ -47,6 +59,12 @@ class NotificationService implements TransactionNotificationServiceContract
         return $this->sendNotification($notification);
     }
 
+    /**
+     * Notify the payer about the failed transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
     public function notifyPayerFailed($transaction)
     {
         $payer_wallet = $this->walletService->getWallet($transaction->payer_wallet_id);

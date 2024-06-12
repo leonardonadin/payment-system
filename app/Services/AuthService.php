@@ -7,7 +7,6 @@ use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\UserServiceContract;
 use App\Contracts\Services\WalletServiceContract;
 use App\Trait\Services\ReversibleActionsTrait;
-use Illuminate\Support\Facades\DB;
 
 class AuthService implements AuthServiceContract
 {

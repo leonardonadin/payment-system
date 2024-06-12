@@ -7,16 +7,35 @@ use App\Models\Transaction;
 
 class TransactionRepository implements TransactionRepositoryContract
 {
+
+    /**
+     * Get all transactions from a user.
+     *
+     * @param int $user_id
+     * @return Transaction[]
+     */
     public function getTransactions($user_id)
     {
         return Transaction::where('user_id', $user_id)->get();
     }
 
+    /**
+     * Get a transaction by its ID.
+     *
+     * @param int $transaction_id
+     * @return Transaction
+     */
     public function getTransaction($transaction_id)
     {
         return Transaction::find($transaction_id);
     }
 
+    /**
+     * Create a new transaction.
+     *
+     * @param array $data
+     * @return Transaction
+     */
     public function createTransaction($data)
     {
         $transaction = new Transaction();
@@ -32,6 +51,13 @@ class TransactionRepository implements TransactionRepositoryContract
         return $transaction;
     }
 
+    /**
+     * Update a transaction.
+     *
+     * @param int $transaction_id
+     * @param array $data
+     * @return Transaction
+     */
     public function updateTransaction($transaction_id, $data)
     {
         $transaction = Transaction::find($transaction_id);

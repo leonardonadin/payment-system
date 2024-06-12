@@ -102,16 +102,35 @@ class TransactionService implements TransactionServiceContract
         return ['error' => 'Transaction could not be completed'];
     }
 
+    /**
+     * Get all transactions from a user.
+     *
+     * @param int $user_id
+     * @return Transaction[]
+     */
     public function getTransactions($user_id)
     {
         return $this->transactionRepository->getTransactions($user_id);
     }
 
+    /**
+     * Get a transaction by its ID.
+     *
+     * @param int $transaction_id
+     * @return Transaction
+     */
     public function getTransaction($transaction_id)
     {
         return $this->transactionRepository->getTransaction($transaction_id);
     }
 
+    /**
+     * Update a transaction status.
+     *
+     * @param int $transaction_id
+     * @param string $status
+     * @return Transaction
+     */
     public function updateTransactionStatus($transaction_id, $status)
     {
         return $this->transactionRepository->updateTransaction($transaction_id, [
@@ -119,6 +138,13 @@ class TransactionService implements TransactionServiceContract
         ]);
     }
 
+    /**
+     * Authorize a transaction.
+     *
+     * @param Transaction $transaction
+     * @param array $data
+     * @return bool
+     */
     private function authorizeTransaction($transaction, $data)
     {
         $authorizationService = app()->makeWith(AuthorizationServiceContract::class);
