@@ -18,6 +18,16 @@ class TransactionController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $transactions = $this->transactionService->getTransactions($this->authService->getAuthUserId());
+
+        return response()->json($transactions);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(TransactionCreateRequest $request)

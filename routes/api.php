@@ -1,9 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\View;
 
-Route::post('/register', [App\Http\Controllers\Api\Auth\RegisterController::class, 'store']);
-Route::post('/login', [App\Http\Controllers\Api\Auth\LoginController::class, 'store']);
+Route::post('/register', [App\Http\Controllers\Api\Auth\RegisterController::class, 'store'])->name('register');
+Route::post('/login', [App\Http\Controllers\Api\Auth\LoginController::class, 'store'])->name('login');
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [App\Http\Controllers\Api\Auth\LogoutController::class, 'store']);
@@ -26,6 +29,12 @@ Route::middleware('auth:sanctum')->group(function() {
     });
 
     Route::controller(App\Http\Controllers\Api\TransactionController::class)->prefix('/transactions')->group(function() {
+        Route::get('/', 'index');
         Route::post('/', 'store');
     });
+});
+
+Route::get('/health', function() {
+    Event::dispatch(new DiagnosingHealth());
+    return response()->json(['status' => 'ok']);
 });

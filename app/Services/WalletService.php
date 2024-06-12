@@ -106,6 +106,14 @@ class WalletService implements WalletServiceContract
             return ['error' => 'You cannot delete your last wallet.'];
         }
 
+        if ($wallet->balance > 0) {
+            return ['error' => 'You cannot delete a wallet with a balance.'];
+        }
+
+        if ($wallet->transactions->count() > 0) {
+            return ['error' => 'You cannot delete a wallet with transactions.'];
+        }
+
         return $this->walletRepository->deleteWallet($wallet_id);
     }
 }
