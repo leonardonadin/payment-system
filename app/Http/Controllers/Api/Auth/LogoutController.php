@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use Illuminate\Http\Request;
 
-class LogoutController extends Controller
+class LogoutController extends AuthController
 {
 
     /**
@@ -16,7 +16,7 @@ class LogoutController extends Controller
     {
         $this->authService->logoutUser();
 
-        return response()->json([
+        return $this->jsonReponse([
             'message' => 'User logged out successfully',
         ]);
     }

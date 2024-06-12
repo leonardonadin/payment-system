@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\UserServiceContract;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ProfileUpdateRequest;
 
-class ProfileController extends Controller
+class ProfileController extends ApiController
 {
     public function __construct(private UserServiceContract $userService, private AuthServiceContract $authService)
     {
@@ -18,7 +17,7 @@ class ProfileController extends Controller
      */
     public function show()
     {
-        return response()->json($this->authService->getAuthUser());
+        return $this->jsonReponse($this->authService->getAuthUser());
     }
 
     /**
@@ -26,7 +25,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request)
     {
-        return response()->json($this->userService->updateUser(
+        return $this->jsonReponse($this->userService->updateUser(
             $this->authService->getAuthUserId(),
             $request->validated()
         ));

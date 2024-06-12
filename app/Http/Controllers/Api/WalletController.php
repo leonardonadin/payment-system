@@ -9,7 +9,7 @@ use App\Http\Requests\Api\WalletCreateRequest;
 use App\Http\Requests\Api\WalletUpdateRequest;
 use Illuminate\Http\Request;
 
-class WalletController extends Controller
+class WalletController extends ApiController
 {
     public function __construct(
         private WalletServiceContract $walletService,
@@ -25,7 +25,7 @@ class WalletController extends Controller
     {
         $wallets = $this->walletService->getUserWallets($this->authService->getAuthUserId());
 
-        return response()->json($wallets);
+        return $this->jsonReponse($wallets);
     }
 
     /**
@@ -40,10 +40,10 @@ class WalletController extends Controller
         $wallet = $this->walletService->createWallet($validated);
 
         if (!$wallet) {
-            return response()->json(['error' => 'Error creating wallet'], 400);
+            return $this->jsonReponse(['message' => 'Error creating wallet'], 400);
         }
 
-        return response()->json($wallet, 201);
+        return $this->jsonReponse($wallet, 201);
     }
 
     /**
@@ -54,10 +54,10 @@ class WalletController extends Controller
         $wallet = $this->walletService->getWallet($wallet_id);
 
         if (!$wallet) {
-            return response()->json(['error' => 'Wallet not found'], 404);
+            return $this->jsonReponse(['message' => 'Wallet not found'], 404);
         }
 
-        return response()->json($wallet);
+        return $this->jsonReponse($wallet);
     }
 
     /**
@@ -68,10 +68,10 @@ class WalletController extends Controller
         $result = $this->walletService->adjustWalletBalance($wallet_id, $request->type, $request->amount);
 
         if (!$result) {
-            return response()->json(['error' => 'Error updating wallet'], 400);
+            return $this->jsonReponse(['error' => 'Error updating wallet'], 400);
         }
 
-        return response()->json(['message' => 'Wallet updated successfully']);
+        return $this->jsonReponse(['message' => 'Wallet updated successfully']);
     }
 
     /**
@@ -85,11 +85,11 @@ class WalletController extends Controller
         );
 
         if (!$result) {
-            return response()->json(['error' => 'Error deleting wallet'], 400);
+            return $this->jsonReponse(['error' => 'Error deleting wallet'], 400);
         }
 
         if (isset($result['error'])) {
-            return response()->json($result, 400);
+            return $this->jsonReponse($result);
         }
 
         return response()->json(['message' => 'Wallet deleted successfully']);

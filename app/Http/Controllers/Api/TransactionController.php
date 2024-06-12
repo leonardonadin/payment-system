@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\TransactionServiceContract;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\TransactionCreateRequest;
 use Illuminate\Http\Request;
 
-class TransactionController extends Controller
+class TransactionController extends ApiController
 {
     public function __construct(
         private TransactionServiceContract $transactionService,
@@ -24,7 +23,7 @@ class TransactionController extends Controller
     {
         $transactions = $this->transactionService->getTransactions($this->authService->getAuthUserId());
 
-        return response()->json($transactions);
+        return $this->jsonReponse($transactions);
     }
 
     /**
@@ -42,10 +41,6 @@ class TransactionController extends Controller
 
         $result = $this->transactionService->createTransaction($validated);
 
-        if (isset($result['error'])) {
-            return response()->json($result, 400);
-        }
-
-        return response()->json($result, 201);
+        return $this->jsonReponse($result, 201);
     }
 }

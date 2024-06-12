@@ -6,7 +6,7 @@ use App\Contracts\Services\AuthServiceContract;
 use App\Http\Requests\Api\Auth\RegisterRequest;
 use Illuminate\Http\Request;
 
-class RegisterController extends Controller
+class RegisterController extends AuthController
 {
     /**
      * Register a new user.
@@ -18,6 +18,6 @@ class RegisterController extends Controller
     {
         $validated = $request->validated();
 
-        return response()->json($this->authService->registerUser($validated), 201);
+        return $this->jsonReponse($this->authService->registerUser($validated), 201);
     }
 }

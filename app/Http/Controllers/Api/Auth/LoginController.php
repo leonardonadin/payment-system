@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use Illuminate\Http\Request;
 
-class LoginController extends Controller
+class LoginController extends AuthController
 {
 
     /**
@@ -18,10 +18,10 @@ class LoginController extends Controller
         $user = $this->authService->loginUser($validated);
 
         if ($user) {
-            return response()->json($user);
+            return $this->jsonReponse($user);
         }
 
-        return response()->json([
+        return $this->jsonReponse([
             'message' => 'Invalid credentials',
         ], 401);
     }
