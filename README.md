@@ -55,9 +55,10 @@ Body:
     "password": "password",
     "password_confirmation": "password",
     "document": "12345678901",
-    "type": "common" // or "shopkeeper"
+    "type": "common"
 }
 ```
+type: common = common user, merchant = merchant user
 
 #### Logout
 
@@ -114,10 +115,11 @@ Middleware: auth
 Body:
 ```json
 {
-    "type": "in", // or "out"
+    "type": "in",
     "amount": 10.00
 }
 ```
+type: in = deposit, out = withdraw
 
 ### Transactions
 
@@ -136,13 +138,14 @@ Body:
 ```json
 {
     "payer": {
-        "wallet_id": 1 // optional
+        "wallet_id": 1
     },
     "payee": {
         "id": 2,
-        "wallet_id": 2 // optional
+        "wallet_id": 2
     },
     "amount": 10.00,
     "description": "Description"
 }
 ```
+payer.wallet_id and payee.wallet_id are optional, if not provided, the system will try to find the wallet by the user id
