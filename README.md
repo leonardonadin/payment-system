@@ -74,10 +74,9 @@ Postman file: `./postman/api.postman_collection.json`
 > - Endpoint: /api/users
 > - Middleware: auth
 > - Query:
-> ```?email=email@email.com```
-> - **email** is optional
-> ```?document=12345678901```
-> - **document** is optional
+> - ```?email=email@email.com```
+> - ```?document=12345678901```
+> - **email** and **document** are optional
 > - If **email** or **document** is provided, the system will try to find the user by the email or document
 > - If **email** or **document** is not provided, the system will return users that has transactions with the authenticated user
 
