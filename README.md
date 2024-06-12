@@ -27,6 +27,8 @@ Simple Laravel project to manage money transactions between users.
 
 ## API
 
+Postman file: `./postman/api.postman_collection.json`
+
 ### Auth
 
 #### Login
@@ -144,4 +146,3 @@ Body:
     "description": "Description"
 }
 ```
-
