@@ -70,7 +70,7 @@ class TransactionService implements TransactionServiceContract
             return ['error' => 'Transaction could not be created'];
         }
 
-        $this->startTransaction();
+        $this->startActions();
 
         try {
             $this->walletService->updateWalletBalance($payer_wallet->id, $payer_wallet->balance - $data['amount']);
@@ -90,11 +90,11 @@ class TransactionService implements TransactionServiceContract
 
             $this->notificationService->createNotifications($transaction);
 
-            $this->commitTransaction();
+            $this->commitActions();
 
             return $transaction;
         } catch (\Exception $e) {
-            $this->rollbackTransaction();
+            $this->rollbackActions();
 
             if (isset($transaction)) {
                 $transaction = $this->updateTransactionStatus($transaction->id, 'failed');
