@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\WalletServiceContract;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\WalletCreateRequest;
 use App\Http\Requests\Api\WalletUpdateRequest;
 use Illuminate\Http\Request;
 
 class WalletController extends Controller
 {
-    public function __construct(private WalletServiceContract $walletService)
+    public function __construct(
+        private WalletServiceContract $walletService,
+        private AuthServiceContract $authService
+    )
     {
     }
 
@@ -18,7 +23,7 @@ class WalletController extends Controller
      */
     public function index()
     {
-        $wallets = $this->walletService->getWallets();
+        $wallets = $this->walletService->getUserWallets($this->authService->getAuthUserId());
 
         return response()->json($wallets);
     }
@@ -26,9 +31,13 @@ class WalletController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(WalletCreateRequest $request)
     {
-        $wallet = $this->walletService->createWallet($request->all());
+        $validated = $request->validated();
+
+        $validated['user_id'] = $this->authService->getAuthUserId();
+
+        $wallet = $this->walletService->createWallet($validated);
 
         if (!$wallet) {
             return response()->json(['error' => 'Error creating wallet'], 400);
@@ -70,7 +79,10 @@ class WalletController extends Controller
      */
     public function destroy(string $wallet_id)
     {
-        $result = $this->walletService->deleteWallet($wallet_id);
+        $result = $this->walletService->deleteWallet(
+            $this->authService->getAuthUserId(),
+            $wallet_id
+        );
 
         if (!$result) {
             return response()->json(['error' => 'Error deleting wallet'], 400);

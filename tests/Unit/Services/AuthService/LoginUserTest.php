@@ -1,8 +1,8 @@
 <?php
 
-namespace Tests\Unit\Services\UserService;
+namespace Tests\Unit\Services\AuthService;
 
-class LoginUserTest extends UserServiceTest
+class LoginUserTest extends AuthServiceTest
 {
     public function test_login_calls_attempt_on_auth_with_correct_parameters_and_returns_user_on_success()
     {

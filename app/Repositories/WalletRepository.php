@@ -14,7 +14,7 @@ class WalletRepository implements WalletRepositoryContract
      * @param int $user_id
      * @return Wallet
      */
-    public function getDefaultWallet($user_id)
+    public function getUserDefaultWallet($user_id)
     {
         return Wallet::where('user_id', $user_id)->first();
     }
@@ -25,7 +25,7 @@ class WalletRepository implements WalletRepositoryContract
      * @param int $user_id
      * @return Wallet[]
      */
-    public function getWallets($user_id)
+    public function getUserWallets($user_id)
     {
         return Wallet::where('user_id', $user_id)->get();
     }

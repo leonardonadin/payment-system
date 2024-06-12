@@ -12,7 +12,11 @@ class AuthService implements AuthServiceContract
 {
     use ReversibleActionsTrait;
 
-    public function __construct(private AuthRepositoryContract $authRepository)
+    public function __construct(
+        private AuthRepositoryContract $authRepository,
+        private UserServiceContract $userService,
+        private WalletServiceContract $walletService
+    )
     {
     }
 
@@ -25,9 +29,9 @@ class AuthService implements AuthServiceContract
     public function registerUser($data)
     {
         return $this->persistOnSuccess(function () use ($data) {
-            $user = app()->makeWith(UserServiceContract::class)->createUser($data);
+            $user = $this->userService->createUser($data);
 
-            $wallet = app()->makeWith(WalletServiceContract::class)->createWallet([
+            $wallet = $this->walletService->createWallet([
                 'user_id' => $user->id,
             ]);
 

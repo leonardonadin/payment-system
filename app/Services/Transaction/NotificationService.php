@@ -5,6 +5,8 @@ namespace App\Services\Transaction;
 use App\Contracts\Services\NotifyServiceContract;
 use App\Contracts\Services\Transaction\NotificationServiceContract as TransactionNotificationServiceContract;
 use App\Contracts\Services\WalletServiceContract;
+use App\Jobs\Notification\Transaction\SendFailJob as SendFailNotificationJob;
+use App\Jobs\Notification\Transaction\SendSuccessJob as SendSuccessNotificationJob;
 
 class NotificationService implements TransactionNotificationServiceContract
 {
@@ -13,6 +15,28 @@ class NotificationService implements TransactionNotificationServiceContract
         private WalletServiceContract $walletService
     )
     {
+    }
+
+    /**
+     * Create a new notification for the transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
+    public function createNotifications($transaction)
+    {
+        SendSuccessNotificationJob::dispatch($transaction);
+    }
+
+    /**
+     * Create a new notification for the failed transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
+    public function createFailedNotifications($transaction)
+    {
+        SendFailNotificationJob::dispatch($transaction);
     }
 
     /**
