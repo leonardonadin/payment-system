@@ -1,15 +1,21 @@
 <?php
+
 namespace Tests\Unit\Services;
 
 use App\Contracts\Repositories\UserRepositoryContract;
-use App\Services\UserService;
+use App\Contracts\Services\UserServiceContract;
 use App\Enums\UserTypes;
-use Tests\Unit\UnitTestCase;
+use App\Services\UserService;
+use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
 
-class UserServiceTest extends UnitTestCase
+class UserServiceTest extends TestCase
 {
-    protected $userRepository;
+    use RefreshDatabase;
+
     protected $userService;
+    protected $userRepository;
 
     public function setUp(): void
     {
@@ -18,48 +24,61 @@ class UserServiceTest extends UnitTestCase
         $this->userService = new UserService($this->userRepository);
     }
 
-    public function testGetAll()
+    public function test_getAll_returns_all_users()
     {
-        $users = ['user1', 'user2'];
-        $this->userRepository->method('getAll')->willReturn($users);
-        $this->assertEquals($users, $this->userService->getAll());
+        $this->userRepository->method('getAll')->willReturn(User::factory()->count(3)->make());
+        $users = $this->userService->getAll();
+        $this->assertCount(3, $users);
     }
 
-    public function testGetUser()
+    public function test_getUser_returns_user_by_id()
     {
-        $user = 'user1';
+        $user = User::factory()->make(['id' => 1]);
         $this->userRepository->method('getUser')->willReturn($user);
-        $this->assertEquals($user, $this->userService->getUser(1));
+        $result = $this->userService->getUser(1);
+        $this->assertEquals($user->id, $result->id);
     }
 
-    public function testGetFilteredUsers()
+    public function test_getFilteredUsers_returns_users_by_filters()
     {
-        $userByDocument = 'user1';
-        $userByEmail = 'user2';
-        $this->userRepository->method('getUserByDocument')->willReturn($userByDocument);
-        $this->userRepository->method('getUserByEmail')->willReturn($userByEmail);
-        $this->assertEquals([$userByDocument], $this->userService->getFilteredUsers(['document' => 'doc']));
-        $this->assertEquals([$userByEmail], $this->userService->getFilteredUsers(['email' => 'email']));
+        $user = User::factory()->make(['document' => '123456789']);
+        $this->userRepository->method('getUserByDocument')->willReturn($user);
+        $result = $this->userService->getFilteredUsers(1, ['document' => '123456789']);
+        $this->assertEquals($user->document, $result[0]->document);
     }
 
-    public function testCreateUser()
+    public function test_createUser_creates_a_new_user()
     {
-        $user = 'user1';
+        $user = User::factory()->make();
         $this->userRepository->method('createUser')->willReturn($user);
-        $this->assertEquals($user, $this->userService->createUser(['name' => 'User 1']));
+        $result = $this->userService->createUser($user->toArray());
+        $this->assertEquals($user->email, $result->email);
     }
 
-    public function testUpdateUser()
+    public function test_updateUser_updates_a_user()
     {
-        $user = 'user1';
-        $this->userRepository->method('updateUser')->willReturn($user);
-        $this->assertEquals($user, $this->userService->updateUser(1, ['name' => 'User 1']));
-    }
-
-    public function testCanMakeTransactions()
-    {
-        $user = (object) ['type' => UserTypes::COMMON];
+        $user = User::factory()->make(['id' => 1, 'name' => 'Old Name']);
         $this->userRepository->method('getUser')->willReturn($user);
-        $this->assertTrue($this->userService->canMakeTransactions(1));
+        $this->userRepository->method('updateUser')->willReturn($user->fill(['name' => 'New Name']));
+        $result = $this->userService->updateUser(1, ['name' => 'New Name']);
+        $this->assertEquals('New Name', $result->name);
+    }
+
+    public function test_canMakeTransactions_returns_true_for_common_user()
+    {
+        $user = User::factory()->make(['type' => 'common']);
+        $user->id = 1;
+        $this->userRepository->method('getUser')->willReturn($user);
+        $result = $this->userService->canMakeTransactions($user->id);
+        $this->assertTrue($result);
+    }
+
+    public function test_canMakeTransactions_returns_false_for_non_common_user()
+    {
+        $user = User::factory()->make(['type' => 'merchant']);
+        $user->id = 1;
+        $this->userRepository->method('getUser')->willReturn($user);
+        $result = $this->userService->canMakeTransactions($user->id);
+        $this->assertFalse($result);
     }
 }

@@ -6,6 +6,13 @@ use App\Contracts\Services\Transaction\AuthorizationServiceContract;
 
 class AuthorizationService implements AuthorizationServiceContract
 {
+    /**
+     * Authorize a transaction with an external service.
+     *
+     * @param Transaction $transaction
+     * @param array $data
+     * @return bool
+     */
     public function authorizeTransaction($transaction, $data)
     {
         $http = new \GuzzleHttp\Client;

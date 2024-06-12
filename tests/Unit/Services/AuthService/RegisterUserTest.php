@@ -17,6 +17,18 @@ class RegisterUserTest extends AuthServiceTest
         ];
 
         $expectedUser = (object) $data;
+        $expectedUser->id = 1;
+
+        $this->userService
+            ->expects($this->once())
+            ->method('createUser')
+            ->with($data)
+            ->willReturn($expectedUser);
+
+        $this->walletService
+            ->expects($this->once())
+            ->method('createWallet')
+            ->with(['user_id' => $expectedUser->id]);
 
         $user = $this->authService->registerUser($data);
 

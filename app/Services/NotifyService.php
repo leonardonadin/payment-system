@@ -7,9 +7,9 @@ use App\Contracts\Services\NotifyServiceContract;
 class NotifyService implements NotifyServiceContract
 {
     /**
-     * Send a notification
+     * Send a notification to the notification service.
      *
-     * @param array $notification ['title', 'message', 'type', 'user']
+     * @param array $notification
      * @return bool
      */
     public function sendNotification($notification)

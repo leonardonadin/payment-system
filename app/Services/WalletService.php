@@ -17,19 +17,20 @@ class WalletService implements WalletServiceContract
      * @param int $user_id
      * @return Wallet
      */
-    public function getDefaultWallet($user_id)
+    public function getUserDefaultWallet($user_id)
     {
-        return $this->walletRepository->getDefaultWallet($user_id);
+        return $this->walletRepository->getUserDefaultWallet($user_id);
     }
 
     /**
      * Get all wallets of a user.
      *
+     * @param int $user_id
      * @return Collection
      */
-    public function getWallets()
+    public function getUserWallets($user_id)
     {
-        return $this->walletRepository->getWallets(auth()->user()->id);
+        return $this->walletRepository->getUserWallets($user_id);
     }
 
     /**
@@ -51,9 +52,6 @@ class WalletService implements WalletServiceContract
      */
     public function createWallet($data)
     {
-        if (!isset($data['user_id'])) {
-            $data['user_id'] = auth()->user()->id;
-        }
         return $this->walletRepository->createWallet($data);
     }
 
@@ -102,7 +100,9 @@ class WalletService implements WalletServiceContract
      */
     public function deleteWallet($wallet_id)
     {
-        if ($this->getWallets(auth()->user()->id)->count() == 1) {
+        $wallet = $this->getWallet($wallet_id);
+
+        if ($this->getUserWallets($wallet->user_id)->count() == 1) {
             return ['error' => 'You cannot delete your last wallet.'];
         }
 

@@ -8,4 +8,5 @@ interface AuthServiceContract
     public function loginUser($data);
     public function logoutUser();
     public function getAuthUser();
+    public function getAuthUserId();
 }

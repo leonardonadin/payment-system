@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Contracts\Repositories\TransactionRepositoryContract;
+use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\Transaction\AuthorizationServiceContract;
+use App\Contracts\Services\Transaction\NotificationServiceContract;
 use App\Contracts\Services\TransactionServiceContract;
 use App\Contracts\Services\UserServiceContract;
 use App\Contracts\Services\WalletServiceContract;
-use App\Jobs\Notification\Transaction\SendFailJob as SendFailNotificationJob;
-use App\Jobs\Notification\Transaction\SendSuccessJob as SendSuccessNotificationJob;
 use App\Trait\Services\ReversibleActionsTrait;
 
 class TransactionService implements TransactionServiceContract
@@ -18,7 +18,10 @@ class TransactionService implements TransactionServiceContract
     public function __construct(
         private TransactionRepositoryContract $transactionRepository,
         private WalletServiceContract $walletService,
-        private UserServiceContract $userService
+        private UserServiceContract $userService,
+        private AuthServiceContract $authService,
+        private AuthorizationServiceContract $authorizationService,
+        private NotificationServiceContract $notificationService
     )
     {
     }
@@ -31,30 +34,33 @@ class TransactionService implements TransactionServiceContract
      */
     public function createTransaction($data)
     {
-        $payer_wallet = $this->walletService->getDefaultWallet(auth()->user()->id);
-        if (isset($data['payer']['wallet_id'])) {
-            $payer_wallet = $this->walletService->getWallet($data['payer']['wallet_id']);
+        if (!isset($data['payer']) || !isset($data['payee']) || !isset($data['amount'])) {
+            return ['error' => 'Invalid data'];
         }
 
-        if (!$this->userService->canMakeTransactions($payer_wallet->user_id)) {
+        $payer_id = $data['payer']['id'];
+
+        if (!$this->userService->canMakeTransactions($payer_id)) {
             return ['error' => 'User cannot make transactions'];
         }
 
-        $payee_wallet = $this->walletService->getDefaultWallet($data['payee']['id']);
-        if (isset($data['payee']['wallet_id'])) {
-            $payee_wallet = $this->walletService->getWallet($data['payee']['wallet_id']);
+        $payer_wallet = $this->walletService->getUserDefaultWallet($payer_id);
+        if (isset($data['payer']['wallet_id'])) {
+            $payer_wallet = $this->walletService->getWallet($data['payer']['wallet_id']);
         }
-
-        $data['payer_wallet_id'] = $payer_wallet->id;
-        $data['payee_wallet_id'] = $payee_wallet->id;
 
         if ($payer_wallet->balance < $data['amount']) {
             return ['error' => 'Insufficient funds'];
         }
 
+        $payee_wallet = $this->walletService->getUserDefaultWallet($data['payee']['id']);
+        if (isset($data['payee']['wallet_id'])) {
+            $payee_wallet = $this->walletService->getWallet($data['payee']['wallet_id']);
+        }
+
         $transaction = $this->transactionRepository->createTransaction([
-            'payer_wallet_id' => $data['payer_wallet_id'],
-            'payee_wallet_id' => $data['payee_wallet_id'],
+            'payer_wallet_id' => $payer_wallet->id,
+            'payee_wallet_id' => $payee_wallet->id,
             'amount' => $data['amount'],
             'description' => $data['description'] ?? null,
             'status' => 'pending',
@@ -82,7 +88,7 @@ class TransactionService implements TransactionServiceContract
                 throw new \Exception('Transaction could not be completed');
             }
 
-            $this->sendNotifications($transaction);
+            $this->notificationService->createNotifications($transaction);
 
             $this->commitActions();
 
@@ -93,7 +99,7 @@ class TransactionService implements TransactionServiceContract
             if (isset($transaction)) {
                 $transaction = $this->updateTransactionStatus($transaction->id, 'failed');
 
-                SendFailNotificationJob::dispatch($transaction);
+                $this->notificationService->createFailedNotifications($transaction);
             }
 
             report($e);
@@ -103,10 +109,10 @@ class TransactionService implements TransactionServiceContract
     }
 
     /**
-     * Get all transactions for a user.
+     * Get all transactions from a user.
      *
      * @param int $user_id
-     * @return array
+     * @return Transaction[]
      */
     public function getTransactions($user_id)
     {
@@ -114,7 +120,7 @@ class TransactionService implements TransactionServiceContract
     }
 
     /**
-     * Get a transaction by id.
+     * Get a transaction by its ID.
      *
      * @param int $transaction_id
      * @return Transaction
@@ -125,7 +131,7 @@ class TransactionService implements TransactionServiceContract
     }
 
     /**
-     * Update the status of a transaction.
+     * Update a transaction status.
      *
      * @param int $transaction_id
      * @param string $status
@@ -147,17 +153,6 @@ class TransactionService implements TransactionServiceContract
      */
     private function authorizeTransaction($transaction, $data)
     {
-        $authorizationService = app()->makeWith(AuthorizationServiceContract::class);
-        return $authorizationService->authorizeTransaction($transaction, $data);
-    }
-
-    /**
-     * Send notifications for a transaction.
-     *
-     * @param Transaction $transaction
-     */
-    private function sendNotifications($transaction)
-    {
-        SendSuccessNotificationJob::dispatch($transaction);
+        return $this->authorizationService->authorizeTransaction($transaction, $data);
     }
 }

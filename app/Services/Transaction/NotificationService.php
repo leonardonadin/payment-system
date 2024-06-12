@@ -5,6 +5,8 @@ namespace App\Services\Transaction;
 use App\Contracts\Services\NotifyServiceContract;
 use App\Contracts\Services\Transaction\NotificationServiceContract as TransactionNotificationServiceContract;
 use App\Contracts\Services\WalletServiceContract;
+use App\Jobs\Notification\Transaction\SendFailJob as SendFailNotificationJob;
+use App\Jobs\Notification\Transaction\SendSuccessJob as SendSuccessNotificationJob;
 
 class NotificationService implements TransactionNotificationServiceContract
 {
@@ -15,6 +17,34 @@ class NotificationService implements TransactionNotificationServiceContract
     {
     }
 
+    /**
+     * Create a new notification for the transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
+    public function createNotifications($transaction)
+    {
+        SendSuccessNotificationJob::dispatch($transaction);
+    }
+
+    /**
+     * Create a new notification for the failed transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
+    public function createFailedNotifications($transaction)
+    {
+        SendFailNotificationJob::dispatch($transaction);
+    }
+
+    /**
+     * Notify the payee about the transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
     public function notifyPayee($transaction)
     {
         $payee_wallet = $this->walletService->getWallet($transaction->payee_wallet_id);
@@ -31,6 +61,12 @@ class NotificationService implements TransactionNotificationServiceContract
         return $this->sendNotification($notification);
     }
 
+    /**
+     * Notify the payer about the transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
     public function notifyPayer($transaction)
     {
         $payer_wallet = $this->walletService->getWallet($transaction->payer_wallet_id);
@@ -47,6 +83,12 @@ class NotificationService implements TransactionNotificationServiceContract
         return $this->sendNotification($notification);
     }
 
+    /**
+     * Notify the payer about the failed transaction.
+     *
+     * @param object $transaction
+     * @return void
+     */
     public function notifyPayerFailed($transaction)
     {
         $payer_wallet = $this->walletService->getWallet($transaction->payer_wallet_id);

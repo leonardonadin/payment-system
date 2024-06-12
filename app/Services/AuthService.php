@@ -7,28 +7,31 @@ use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\UserServiceContract;
 use App\Contracts\Services\WalletServiceContract;
 use App\Trait\Services\ReversibleActionsTrait;
-use Illuminate\Support\Facades\DB;
 
 class AuthService implements AuthServiceContract
 {
     use ReversibleActionsTrait;
 
-    public function __construct(private AuthRepositoryContract $authRepository)
+    public function __construct(
+        private AuthRepositoryContract $authRepository,
+        private UserServiceContract $userService,
+        private WalletServiceContract $walletService
+    )
     {
     }
 
     /**
-     * Register a new user
+     * Register a new user.
      *
      * @param array $data
-     * @return object
+     * @return User
      */
     public function registerUser($data)
     {
         return $this->persistOnSuccess(function () use ($data) {
-            $user = app()->makeWith(UserServiceContract::class)->createUser($data);
+            $user = $this->userService->createUser($data);
 
-            $wallet = app()->makeWith(WalletServiceContract::class)->createWallet([
+            $wallet = $this->walletService->createWallet([
                 'user_id' => $user->id,
             ]);
 
@@ -37,10 +40,10 @@ class AuthService implements AuthServiceContract
     }
 
     /**
-     * Login a user
+     * Login a user.
      *
      * @param array $data
-     * @return array|bool Token with user data or false
+     * @return array|bool
      */
     public function loginUser($data)
     {
@@ -56,7 +59,7 @@ class AuthService implements AuthServiceContract
     }
 
     /**
-     * Logout a user
+     * Logout a user.
      *
      * @return bool
      */
@@ -66,12 +69,22 @@ class AuthService implements AuthServiceContract
     }
 
     /**
-     * Get the authenticated user
+     * Get the authenticated user.
      *
-     * @return object
+     * @return User
      */
     public function getAuthUser()
     {
         return $this->authRepository->getAuthUser();
+    }
+
+    /**
+     * Get the authenticated user ID.
+     *
+     * @return int
+     */
+    public function getAuthUserId()
+    {
+        return $this->authRepository->getAuthUser()->id;
     }
 }

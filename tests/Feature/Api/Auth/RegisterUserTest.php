@@ -10,9 +10,6 @@ class RegisterUserTest extends ApiTestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Simple register test.
-     */
     public function test_when_user_registers_then_user_is_created(): void
     {
         $response = $this->post('/api/register', [
@@ -32,9 +29,6 @@ class RegisterUserTest extends ApiTestCase
         ]);
     }
 
-    /**
-     * Register test with type.
-     */
     public function test_when_user_registers_with_type_then_user_is_created_with_type(): void
     {
         $response = $this->post('/api/register', [

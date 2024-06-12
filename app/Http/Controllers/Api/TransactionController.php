@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\Services\AuthServiceContract;
 use App\Contracts\Services\TransactionServiceContract;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\TransactionCreateRequest;
@@ -9,7 +10,10 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function __construct(private TransactionServiceContract $transactionService)
+    public function __construct(
+        private TransactionServiceContract $transactionService,
+        private AuthServiceContract $authService
+    )
     {
     }
 
@@ -18,7 +22,15 @@ class TransactionController extends Controller
      */
     public function store(TransactionCreateRequest $request)
     {
-        $result = $this->transactionService->createTransaction($request->validated());
+        $validated = $request->validated();
+
+        if (!isset($validated['payer'])) {
+            $validated['payer'] = [];
+        }
+
+        $validated['payer']['id'] = $this->authService->getAuthUserId();
+
+        $result = $this->transactionService->createTransaction($validated);
 
         if (isset($result['error'])) {
             return response()->json($result, 400);
