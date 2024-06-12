@@ -10,7 +10,11 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::controller(App\Http\Controllers\Api\UserController::class)->group(function() {
         Route::get('/users', 'index');
-        Route::get('/user', 'show');
+    });
+
+    Route::controller(App\Http\Controllers\Api\ProfileController::class)->group(function() {
+        Route::get('/profile', 'show');
+        Route::put('/profile', 'update');
     });
 
     Route::controller(App\Http\Controllers\Api\WalletController::class)->prefix('/wallets')->group(function() {

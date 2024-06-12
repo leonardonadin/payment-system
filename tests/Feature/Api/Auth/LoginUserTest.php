@@ -24,9 +24,6 @@ class LoginUserTest extends ApiTestCase
         ]);
     }
 
-    /**
-     * A basic feature test example.
-     */
     public function test_when_user_logs_in_then_user_is_logged_in(): void
     {
         $response = $this->post('/api/login', [

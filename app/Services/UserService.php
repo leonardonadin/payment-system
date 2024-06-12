@@ -28,7 +28,7 @@ class UserService implements UserServiceContract
      * @param int $user_id
      * @return User
      */
-    public function getUser($user_id)
+    public function getUser(int $user_id)
     {
         return $this->userRepository->getUser($user_id);
     }
@@ -36,10 +36,11 @@ class UserService implements UserServiceContract
     /**
      * Get users by filters (document or email) or knowned users.
      *
+     * @param int $user_id
      * @param array $filters
      * @return User[]
      */
-    public function getFilteredUsers($filters)
+    public function getFilteredUsers(int $user_id, array $filters)
     {
         if (isset($filters['document'])) {
             return [$this->userRepository->getUserByDocument($filters['document'])];
@@ -58,7 +59,7 @@ class UserService implements UserServiceContract
      * @param array $data
      * @return User
      */
-    public function createUser($data)
+    public function createUser(array $data)
     {
         return $this->userRepository->createUser($data);
     }
@@ -69,7 +70,7 @@ class UserService implements UserServiceContract
      * @param int $user_id
      * @param array $data
      */
-    public function updateUser($user_id, $data)
+    public function updateUser(int $user_id, array $data)
     {
         return $this->userRepository->updateUser($user_id, $data);
     }
@@ -80,7 +81,7 @@ class UserService implements UserServiceContract
      * @param int $user_id
      * @return bool
      */
-    public function canMakeTransactions($user_id)
+    public function canMakeTransactions(int $user_id)
     {
         $user = $this->getUser($user_id);
 
