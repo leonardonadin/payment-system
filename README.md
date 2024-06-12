@@ -73,12 +73,37 @@ Postman file: `./postman/api.postman_collection.json`
 > - HTTP Method: GET
 > - Endpoint: /api/users
 > - Middleware: auth
+> - Query:
+> ```?email=email@email.com```
+> - **email** is optional
+> ```?document=12345678901```
+> - **document** is optional
+> - If **email** or **document** is provided, the system will try to find the user by the email or document
+> - If **email** or **document** is not provided, the system will return users that has transactions with the authenticated user
+
+### Profile
 
 > #### Show user
 > 
 > - HTTP Method: GET
-> - Endpoint: /api/users/{id}
+> - Endpoint: /api/profile
 > - Middleware: auth
+
+> #### Update user
+>
+> - HTTP Method: PUT
+> - Endpoint: /api/profile
+> - Middleware: auth
+> - Body:
+> ```json
+> {
+>     "name": "Name",
+>     "email": "email@email.com",
+>     "password": "password",
+>     "password_confirmation": "password"
+> }
+> ```
+> - **name**, **email** and **password** are optional
 
 ### Wallet
 
@@ -86,6 +111,12 @@ Postman file: `./postman/api.postman_collection.json`
 > 
 > - HTTP Method: GET
 > - Endpoint: /api/wallets
+> - Middleware: auth
+
+> #### Show wallet
+> 
+> - HTTP Method: GET
+> - Endpoint: /api/wallet/{id}
 > - Middleware: auth
 
 > #### Create wallet
@@ -101,12 +132,6 @@ Postman file: `./postman/api.postman_collection.json`
 > }
 > ```
 
-> #### Show wallet
-> 
-> - HTTP Method: GET
-> - Endpoint: /api/wallet/{id}
-> - Middleware: auth
-
 > #### Update wallet
 > 
 > - HTTP Method: POST
@@ -120,6 +145,12 @@ Postman file: `./postman/api.postman_collection.json`
 > }
 > ```
 > - **type**: in = deposit, out = withdraw
+
+> #### Delete wallet
+>
+> - HTTP Method: DELETE
+> - Endpoint: /api/wallet/{id}
+> - Middleware: auth
 
 ### Transactions
 

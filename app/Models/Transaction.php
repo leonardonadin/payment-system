@@ -25,7 +25,7 @@ class Transaction extends Model
     /**
      * Get the wallet that received the transaction.
      */
-    public function payee()
+    public function payeeWallet()
     {
         return $this->belongsTo(Wallet::class, 'payee_wallet_id');
     }
@@ -33,7 +33,7 @@ class Transaction extends Model
     /**
      * Get the wallet that paid for the transaction.
      */
-    public function payer()
+    public function payerWallet()
     {
         return $this->belongsTo(Wallet::class, 'payer_wallet_id');
     }

@@ -16,7 +16,11 @@ class TransactionRepository implements TransactionRepositoryContract
      */
     public function getTransactions($user_id)
     {
-        return Transaction::where('user_id', $user_id)->get();
+        return Transaction::whereHas('payerWallet', function ($query) use ($user_id) {
+            $query->where('user_id', $user_id);
+        })->orWhereHas('payeeWallet', function ($query) use ($user_id) {
+            $query->where('user_id', $user_id);
+        })->get();
     }
 
     /**

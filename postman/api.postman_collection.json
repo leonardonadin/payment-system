@@ -105,7 +105,7 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "List Users",
+					"name": "List",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -137,6 +137,18 @@
 							],
 							"path": [
 								"users"
+							],
+							"query": [
+								{
+									"key": "document",
+									"value": "12345678900",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "email@email.com",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -147,6 +159,39 @@
 		{
 			"name": "Transaction",
 			"item": [
+				{
+					"name": "List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/transactions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "Create",
 					"request": {
@@ -213,7 +258,13 @@
 							]
 						},
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/wallets",
 							"host": [
@@ -223,6 +274,14 @@
 								"wallets"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show",
+					"request": {
+						"method": "GET",
+						"header": []
 					},
 					"response": []
 				},
@@ -259,6 +318,82 @@
 								}
 							}
 						},
+						"url": {
+							"raw": "{{baseUrl}}/wallets/:wallet_id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"wallets",
+								":wallet_id"
+							],
+							"variable": [
+								{
+									"key": "wallet_id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"My Wallet\",\r\n    \"balance\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/wallets",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"wallets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
 						"url": {
 							"raw": "{{baseUrl}}/wallets/:wallet_id",
 							"host": [
